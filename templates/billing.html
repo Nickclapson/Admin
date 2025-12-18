@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="panel">
+  <header class="panel-header">
+    <h2>Billing summary for {{ month_label }}</h2>
+    <form method="GET">
+      <label>Month
+        <select name="month" onchange="this.form.submit()">
+          {% for option in month_options %}
+            <option value="{{ option }}" {% if option == month %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </form>
+  </header>
+
+  <table class="task-table">
+    <thead>
+      <tr>
+        <th>Client</th>
+        <th>Title</th>
+        <th>Completed</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in tasks %}
+      <tr>
+        <td>{{ task.client }}</td>
+        <td>{{ task.title }}</td>
+        <td>{{ task.completed_at.date() }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="3" class="empty">No published tasks in {{ month_label }}.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

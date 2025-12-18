@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="panel">
+  <form class="task-form" action="{{ url_for('create_task') }}" method="POST">
+    <div class="form-grid">
+      <label>Client
+        <input type="text" name="client" required>
+      </label>
+      <label>Title
+        <input type="text" name="title" required>
+      </label>
+      <label>Description
+        <textarea name="description" rows="2"></textarea>
+      </label>
+      <label>Planned month
+        <select name="planned_month">
+          {% for option in month_options %}
+            <option value="{{ option }}" {% if option == month %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Scheduled for
+        <input type="date" name="scheduled_for">
+      </label>
+      <label>Status
+        <select name="status">
+          {% for value, label in statuses %}
+            <option value="{{ value }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+    <button type="submit">Add task</button>
+  </form>
+</section>
+
+<section class="panel">
+  <header class="panel-header">
+    <h2>Tasks for {{ month_label }}</h2>
+    <form method="GET">
+      <label>Month
+        <select name="month" onchange="this.form.submit()">
+          {% for option in month_options %}
+            <option value="{{ option }}" {% if option == month %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </form>
+  </header>
+
+  <table class="task-table">
+    <thead>
+      <tr>
+        <th>Client</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Scheduled</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in tasks %}
+      <tr>
+        <td>{{ task.client }}</td>
+        <td>{{ task.title }}</td>
+        <td>{{ task.description or '—' }}</td>
+        <td>{{ task.scheduled_for or '—' }}</td>
+        <td class="status {{ task.status }}">{{ dict(statuses).get(task.status) }}</td>
+        <td>
+          <form action="{{ url_for('update_status', task_id=task.id) }}" method="POST">
+            <select name="status" onchange="this.form.submit()">
+              {% for value, label in statuses %}
+                <option value="{{ value }}" {% if value == task.status %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" class="empty">No tasks planned for {{ month_label }} yet.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
